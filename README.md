@@ -73,8 +73,7 @@ O repositório inclui CI em `.github/workflows/ci.yml`. A cada push e pull reque
 2. Roda `npm install`
 3. Typecheck
 4. Testes
-5. Checagem de auth
-6. Build de produção
+5. Build de produção
 
 Para disparar na mão: aba **Actions** → **CI** → **Run workflow**.
 

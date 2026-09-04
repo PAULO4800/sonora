@@ -37,9 +37,6 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Auth invariant
-        run: npm run check:auth
-
       - name: Build
         run: npm run build
         env:

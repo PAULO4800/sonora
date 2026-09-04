@@ -70,7 +70,7 @@ No terminal, pressione Ctrl + C.
 GitHub Actions
 --------------
 O arquivo .github/workflows/ci.yml roda sozinho em todo push/PR:
-  npm ci → typecheck → testes → build.
+  npm install → typecheck → testes → build.
 
 Para disparar na mão: GitHub → Actions → CI → Run workflow.
 A chave XAI_API_KEY não vai no CI. Use .env no seu PC.
