@@ -1,0 +1,79 @@
+SONORA — como rodar no seu PC
+================================
+
+O que você precisa
+------------------
+1. Node.js 22 ou mais novo  →  https://nodejs.org
+   (na instalação do Windows, marque a opção "Add to PATH")
+2. Uma chave da API da xAI  →  https://console.x.ai
+   (é ela que gera as vozes reais)
+
+Passo a passo (Windows, Mac ou Linux)
+-------------------------------------
+1. Extraia este ZIP para uma pasta, por exemplo:
+     C:\Sonora
+     ou
+     ~/Sonora
+
+2. Abra o terminal NESSÁ pasta:
+     Windows: clique com o botão direito na pasta → "Abrir no Terminal"
+              ou PowerShell:  cd C:\Sonora
+     Mac/Linux:  cd ~/Sonora
+
+3. Copie o arquivo de exemplo da chave:
+     Windows (PowerShell):  copy .env.example .env
+     Mac/Linux:             cp .env.example .env
+
+4. Abra o arquivo .env no Bloco de Notas e cole a sua chave:
+     XAI_API_KEY=xai-xxxxxxxx
+
+   Sem aspas. Sem espaço em volta do =.
+
+5. Instale as dependências (só na primeira vez, demora 1–2 minutos):
+     npm install
+
+6. Inicie o app:
+     npm run dev
+
+7. No navegador, abra:
+     http://localhost:8080
+
+Pronto. Cole o texto, escolha a voz, clique em Gerar voz.
+
+
+Se der erro
+-----------
+- "npm não é reconhecido"
+    Node.js não está no PATH. Reinstale o Node e reabra o terminal.
+
+- "A geração de voz não está disponível"
+    A chave XAI_API_KEY está vazia, errada ou o arquivo .env não está
+    na pasta do projeto (a mesma pasta do package.json).
+
+- Porta 8080 ocupada
+    Feche o outro programa que está usando 8080, ou rode:
+      npx vite dev --host 0.0.0.0 --port 5173
+    e abra http://localhost:5173
+
+- Gerar voz falhou / 429
+    A cota da sua chave xAI esgotou ou a internet caiu. Tente de novo.
+
+
+Atalhos no app
+--------------
+Ctrl + Enter (Windows) ou ⌘ + Enter (Mac) gera a voz.
+As gerações recentes ficam salvas neste navegador, neste computador.
+
+
+Parar o servidor
+----------------
+No terminal, pressione Ctrl + C.
+
+
+GitHub Actions
+--------------
+O arquivo .github/workflows/ci.yml roda sozinho em todo push/PR:
+  npm ci → typecheck → testes → build.
+
+Para disparar na mão: GitHub → Actions → CI → Run workflow.
+A chave XAI_API_KEY não vai no CI. Use .env no seu PC.
