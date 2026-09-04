@@ -70,7 +70,7 @@ As gerações recentes ficam salvas neste navegador, neste computador.
 O repositório inclui CI em `.github/workflows/ci.yml`. A cada push e pull request na `main` ele:
 
 1. Instala o Node 22
-2. Roda `npm ci`
+2. Roda `npm install`
 3. Typecheck
 4. Testes
 5. Checagem de auth
