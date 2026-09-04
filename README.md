@@ -10,8 +10,8 @@ Repositório: [https://github.com/PAULO4800/sonora](https://github.com/PAULO4800
 
 1. **Node.js 22 ou mais novo** — [https://nodejs.org](https://nodejs.org)  
    No Windows, na instalação, marque **Add to PATH**.
-2. **Chave da API da xAI** — [https://console.x.ai](https://console.x.ai)  
-   É ela que gera as vozes reais.
+2. **Chave da ElevenLabs** — [https://elevenlabs.io](https://elevenlabs.io)  
+   Cole a chave em **Configurações** dentro do app. Ela fica salva neste navegador.
 
 ## Passo a passo
 
@@ -24,31 +24,23 @@ Repositório: [https://github.com/PAULO4800/sonora](https://github.com/PAULO4800
 
    Sem Git: extraia o ZIP para uma pasta, por exemplo `C:\Sonora` ou `~/Sonora`, e abra o terminal **nessa pasta**.
 
-2. Copie o arquivo da chave:
-   - Windows (PowerShell): `copy .env.example .env`
-   - Mac/Linux: `cp .env.example .env`
-3. Abra o `.env` e cole a chave:
-
-   ```
-   XAI_API_KEY=xai-xxxxxxxx
-   ```
-
-   Sem aspas. Sem espaço em volta do `=`.
-4. Instale as dependências (só na primeira vez):
+2. Instale as dependências (só na primeira vez):
 
    ```
    npm install
    ```
 
-5. Inicie o app:
+3. Inicie o app:
 
    ```
    npm run dev
    ```
 
-6. No navegador, abra [http://localhost:8080](http://localhost:8080)
+4. No navegador, abra [http://localhost:8080](http://localhost:8080)
 
-Cole o texto, escolha a voz, clique em **Gerar voz**.
+5. Clique em **Configurações**, cole a chave da ElevenLabs (`sk_…`) e salve.
+
+Cole o texto, escolha a voz (Krok é a voz padrão em PT-BR) e clique em **Gerar voz**.
 
 `Ctrl + Enter` (Windows) ou `⌘ + Enter` (Mac) também gera a voz.
 
@@ -59,9 +51,10 @@ Para parar o servidor: `Ctrl + C` no terminal.
 | Problema | O que fazer |
 |---|---|
 | `npm` não é reconhecido | Node.js não está no PATH. Reinstale o Node e **reabra** o terminal. |
-| “A geração de voz não está disponível” | A chave `XAI_API_KEY` está vazia, errada, ou o `.env` não está na mesma pasta do `package.json`. |
+| “Configure sua chave em Configurações” | Abra Configurações, cole a chave da ElevenLabs e salve. A chave fica só neste navegador. |
+| Chave inválida | Confira se copiou a chave completa em elevenlabs.io → Profile → API keys. |
 | Porta 8080 ocupada | Feche o outro programa que usa 8080. |
-| Gerar voz falhou / 429 | Cota da chave xAI ou internet. Tente de novo. |
+| Gerar voz falhou / cota | Cota da ElevenLabs ou internet. Tente de novo. |
 
 As gerações recentes ficam salvas neste navegador, neste computador.
 
@@ -77,4 +70,4 @@ O repositório inclui CI em `.github/workflows/ci.yml`. A cada push e pull reque
 
 Para disparar na mão: aba **Actions** → **CI** → **Run workflow**.
 
-A chave `XAI_API_KEY` **não** entra no CI (é só para gerar voz em runtime). Coloque-a no `.env` local, ou em **Settings → Secrets and variables → Actions** se um dia quiser um job que chame a API.
+A chave da ElevenLabs **não** entra no CI. Cole-a em Configurações no app.

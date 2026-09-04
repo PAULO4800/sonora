@@ -68,6 +68,16 @@
   }
 }
 
+@keyframes sonora-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: sonora-spin 0.8s linear infinite;
+}
+
 @keyframes sonora-pulse {
   0%,
   100% {
@@ -99,7 +109,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .sonora-led,
-  .sonora-enter {
+  .sonora-enter,
+  .animate-spin {
     animation: none;
   }
 }

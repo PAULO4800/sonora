@@ -11,6 +11,7 @@ export type Voice = {
   tone: string;
   use: string;
   group: VoiceGroup;
+  featured?: boolean;
 };
 
 export const VOICE_GROUPS: { id: VoiceGroup | "todas"; label: string }[] = [
@@ -23,6 +24,14 @@ export const VOICE_GROUPS: { id: VoiceGroup | "todas"; label: string }[] = [
 ];
 
 export const VOICES: Voice[] = [
+  {
+    id: "krok",
+    name: "Krok",
+    tone: "Clara, inteligente e natural em português brasileiro",
+    use: "Assistente",
+    group: "assistente",
+    featured: true,
+  },
   {
     id: "orion",
     name: "Orion",
@@ -223,7 +232,7 @@ export const VOICES: Voice[] = [
 
 export const VOICE_IDS = new Set(VOICES.map((v) => v.id));
 
-export const DEFAULT_VOICE_ID = "orion";
+export const DEFAULT_VOICE_ID = "krok";
 
 export function getVoice(id: string) {
   return VOICES.find((v) => v.id === id) ?? VOICES[0];

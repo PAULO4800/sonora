@@ -1,10 +1,19 @@
-import { AudioLines, Clock3, Trash2 } from "lucide-react";
+import { AudioLines, Settings, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AudioDeck } from "@/components/audio-deck";
+import { SettingsDialog } from "@/components/settings-dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { VoiceRail } from "@/components/voice-rail";
+import {
+  KROK_TEST_TEXT,
+  MISSING_KEY_MESSAGE,
+  loadElevenLabsKey,
+  loadKrokVoiceId,
+  saveElevenLabsKey,
+  saveKrokVoiceId,
+} from "@/lib/elevenlabs";
 import {
   deleteClip,
   listClips,
@@ -44,11 +53,15 @@ export function StudioApp() {
   const [committedText, setCommittedText] = useState<string | null>(null);
   const [history, setHistory] = useState<ClipRecord[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [hasKey, setHasKey] = useState(false);
+  const [serverReady, setServerReady] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const audioUrlRef = useRef<string | null>(null);
 
   const voice = getVoice(voiceId);
   const stale = Boolean(audioUrl && committedText !== null && committedText !== text);
+  const needsKey = hydrated && !hasKey && !serverReady;
 
   useEffect(() => {
     const prefs = loadPrefs();
@@ -56,10 +69,15 @@ export function StudioApp() {
     setVoiceId(prefs.voiceId);
     setLanguage(prefs.language);
     setSpeed(prefs.speed);
+    setHasKey(Boolean(loadElevenLabsKey()));
     setHydrated(true);
     void listClips()
       .then(setHistory)
       .catch(() => undefined);
+    void fetch("/api/tts")
+      .then((res) => res.json())
+      .then((body: { ready?: boolean }) => setServerReady(Boolean(body.ready)))
+      .catch(() => setServerReady(false));
   }, []);
 
   useEffect(() => {
@@ -109,8 +127,22 @@ export function StudioApp() {
     });
   }
 
-  async function generate() {
-    if (generating || overLimit || !text.trim()) return;
+  async function generateFrom(opts: {
+    source: string;
+    voice: string;
+    lang: LanguageId;
+    pace: number;
+    apiKey?: string;
+    krokVoiceId?: string;
+    saveHistory: boolean;
+  }) {
+    const apiKey = opts.apiKey ?? loadElevenLabsKey();
+    if (!apiKey && !serverReady) {
+      setError(MISSING_KEY_MESSAGE);
+      setSettingsOpen(true);
+      return false;
+    }
+
     setGenerating(true);
     setError(null);
     try {
@@ -118,10 +150,12 @@ export function StudioApp() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          text: text.trim(),
-          voiceId,
-          language,
-          speed,
+          text: opts.source.trim(),
+          voiceId: opts.voice,
+          language: opts.lang,
+          speed: opts.pace,
+          apiKey: apiKey || undefined,
+          krokVoiceId: opts.krokVoiceId || loadKrokVoiceId() || undefined,
         }),
       });
       const type = res.headers.get("content-type") ?? "";
@@ -131,28 +165,64 @@ export function StudioApp() {
           const body = (await res.json()) as GenerateError;
           if (body.error) message = body.error;
         }
+        if (message === MISSING_KEY_MESSAGE) setSettingsOpen(true);
         throw new Error(message);
       }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       setObjectUrl(url);
-      setCommittedText(text);
-      const clip: ClipRecord = {
-        id: crypto.randomUUID(),
-        text,
-        voiceId,
-        language,
-        speed,
-        createdAt: Date.now(),
-        blob,
-      };
-      await saveClip(clip);
-      setHistory((prev) => [clip, ...prev].slice(0, 12));
+      setCommittedText(opts.source);
+      if (opts.saveHistory) {
+        const clip: ClipRecord = {
+          id: crypto.randomUUID(),
+          text: opts.source,
+          voiceId: opts.voice,
+          language: opts.lang,
+          speed: opts.pace,
+          createdAt: Date.now(),
+          blob,
+        };
+        await saveClip(clip);
+        setHistory((prev) => [clip, ...prev].slice(0, 12));
+      }
+      return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha inesperada ao gerar a voz.");
+      return false;
     } finally {
       setGenerating(false);
     }
+  }
+
+  async function generate() {
+    if (generating || overLimit || !text.trim()) return;
+    await generateFrom({
+      source: text,
+      voice: voiceId,
+      lang: language,
+      pace: speed,
+      saveHistory: true,
+    });
+  }
+
+  async function testKrok(apiKey: string, krokVoiceId: string) {
+    if (apiKey) saveElevenLabsKey(apiKey);
+    if (krokVoiceId) saveKrokVoiceId(krokVoiceId);
+    setHasKey(Boolean(apiKey || loadElevenLabsKey()));
+    setVoiceId("krok");
+    setLanguage("pt-BR");
+    setText(KROK_TEST_TEXT);
+    const ok = await generateFrom({
+      source: KROK_TEST_TEXT,
+      voice: "krok",
+      lang: "pt-BR",
+      pace: 1,
+      apiKey,
+      krokVoiceId,
+      saveHistory: true,
+    });
+    if (ok) setSettingsOpen(false);
+    return ok;
   }
 
   function loadClip(clip: ClipRecord) {
@@ -187,16 +257,44 @@ export function StudioApp() {
             <p className="mt-1 text-xs text-muted">Estúdio de vozes realistas</p>
           </div>
         </div>
-        <div className="hidden items-center gap-2 text-xs text-muted sm:flex">
-          <span
-            className={cn(
-              "size-1.5 rounded-full",
-              generating ? "sonora-led bg-live" : "bg-muted",
-            )}
-          />
-          {generating ? "Gravando" : "Pronto"}
+        <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 text-xs text-muted sm:flex">
+            <span
+              className={cn(
+                "size-1.5 rounded-full",
+                generating ? "sonora-led bg-live" : "bg-muted",
+              )}
+            />
+            {generating ? "Gravando" : "Pronto"}
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            aria-label="Configurações"
+            onClick={() => setSettingsOpen(true)}
+            className="shrink-0"
+          >
+            <Settings className="size-4" />
+            <span className="hidden sm:inline">Configurações</span>
+          </Button>
         </div>
       </header>
+
+      {needsKey ? (
+        <div className="border-b border-border bg-elevated px-4 py-3 sm:px-6" role="status">
+          <p className="text-sm text-fg">
+            {MISSING_KEY_MESSAGE}.{" "}
+            <button
+              type="button"
+              className="font-medium text-accent underline-offset-4 hover:underline"
+              onClick={() => setSettingsOpen(true)}
+            >
+              Abrir Configurações
+            </button>
+          </p>
+        </div>
+      ) : null}
 
       <div className="mx-auto grid min-h-[calc(100svh-65px)] max-w-7xl lg:h-[calc(100svh-65px)] lg:grid-cols-[20rem_minmax(0,1fr)] lg:overflow-hidden">
         <div className="min-w-0 border-b border-border lg:h-full lg:overflow-hidden lg:border-b-0 lg:border-r">
@@ -356,7 +454,6 @@ export function StudioApp() {
                           <span>{v.name}</span>
                           <span className="text-subtle">·</span>
                           <span className="inline-flex items-center gap-1">
-                            <Clock3 className="size-3" />
                             {new Date(clip.createdAt).toLocaleTimeString("pt-BR", {
                               hour: "2-digit",
                               minute: "2-digit",
@@ -381,6 +478,14 @@ export function StudioApp() {
           ) : null}
         </main>
       </div>
+
+      <SettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        onKeyChange={setHasKey}
+        onTestKrok={testKrok}
+        testing={generating}
+      />
     </div>
   );
 }

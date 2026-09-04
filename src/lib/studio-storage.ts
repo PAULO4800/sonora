@@ -1,4 +1,4 @@
-import { DEFAULT_LANGUAGE, DEFAULT_TEXT, DEFAULT_VOICE_ID, type LanguageId } from "./voices";
+import { DEFAULT_LANGUAGE, DEFAULT_TEXT, DEFAULT_VOICE_ID, VOICE_IDS, type LanguageId } from "./voices";
 
 const PREFS_KEY = "sonora:prefs:v1";
 const DB_NAME = "sonora";
@@ -22,39 +22,33 @@ export type ClipRecord = {
   blob: Blob;
 };
 
+function fallbackPrefs(): StudioPrefs {
+  return {
+    text: DEFAULT_TEXT,
+    voiceId: DEFAULT_VOICE_ID,
+    language: DEFAULT_LANGUAGE,
+    speed: 1,
+  };
+}
+
 export function loadPrefs(): StudioPrefs {
-  if (typeof window === "undefined") {
-    return {
-      text: DEFAULT_TEXT,
-      voiceId: DEFAULT_VOICE_ID,
-      language: DEFAULT_LANGUAGE,
-      speed: 1,
-    };
-  }
+  if (typeof window === "undefined") return fallbackPrefs();
   try {
     const raw = localStorage.getItem(PREFS_KEY);
-    if (!raw) {
-      return {
-        text: DEFAULT_TEXT,
-        voiceId: DEFAULT_VOICE_ID,
-        language: DEFAULT_LANGUAGE,
-        speed: 1,
-      };
-    }
+    if (!raw) return fallbackPrefs();
     const parsed = JSON.parse(raw) as Partial<StudioPrefs>;
+    const voiceId =
+      typeof parsed.voiceId === "string" && VOICE_IDS.has(parsed.voiceId)
+        ? parsed.voiceId
+        : DEFAULT_VOICE_ID;
     return {
       text: typeof parsed.text === "string" && parsed.text.length > 0 ? parsed.text : DEFAULT_TEXT,
-      voiceId: typeof parsed.voiceId === "string" ? parsed.voiceId : DEFAULT_VOICE_ID,
+      voiceId,
       language: (parsed.language as LanguageId) || DEFAULT_LANGUAGE,
       speed: typeof parsed.speed === "number" ? parsed.speed : 1,
     };
   } catch {
-    return {
-      text: DEFAULT_TEXT,
-      voiceId: DEFAULT_VOICE_ID,
-      language: DEFAULT_LANGUAGE,
-      speed: 1,
-    };
+    return fallbackPrefs();
   }
 }
 

@@ -97,9 +97,15 @@ export function VoiceRail({
                     {voice.name.slice(0, 1)}
                   </span>
                   <span className="font-medium text-fg">{voice.name}</span>
-                  <span className="ml-auto hidden text-xs uppercase tracking-wide text-subtle lg:inline">
-                    {voice.use}
-                  </span>
+                  {voice.featured ? (
+                    <span className="rounded-full bg-accent/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-accent">
+                      Destaque
+                    </span>
+                  ) : (
+                    <span className="ml-auto hidden text-xs uppercase tracking-wide text-subtle lg:inline">
+                      {voice.use}
+                    </span>
+                  )}
                 </span>
                 <span className="mt-1.5 line-clamp-2 text-xs leading-snug text-muted">
                   {voice.tone}
