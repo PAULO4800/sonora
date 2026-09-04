@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+
+  --color-bg: #0c0c0d;
+  --color-surface: #141416;
+  --color-elevated: #1c1c1f;
+  --color-fg: #f2f1ee;
+  --color-muted: #9a9890;
+  --color-subtle: #6e6c66;
+  --color-accent: #d4d0c8;
+  --color-accent-fg: #0c0c0d;
+  --color-border: rgb(242 241 238 / 0.12);
+  --color-border-strong: rgb(242 241 238 / 0.22);
+  --color-danger: #c45c4a;
+  --color-live: #c45c4a;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-border: 0 0 0 1px rgb(242 241 238 / 0.08);
+  --shadow-border-hover: 0 0 0 1px rgb(242 241 238 / 0.14);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body,
+  #app {
+    min-height: 100svh;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-accent) 35%, transparent);
+    color: var(--color-fg);
+  }
+}
+
+@keyframes sonora-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes sonora-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sonora-led {
+  animation: sonora-pulse 1.2s ease-in-out infinite;
+}
+
+.sonora-enter {
+  animation: sonora-rise 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sonora-led,
+  .sonora-enter {
+    animation: none;
+  }
+}

@@ -4,6 +4,8 @@ Estúdio de vozes realistas. Cole um texto, escolha a voz, gere o áudio e baixe
 
 Guia rápido em português: **COMO-RODAR.txt** (o mesmo conteúdo abaixo).
 
+Repositório: [https://github.com/PAULO4800/sonora](https://github.com/PAULO4800/sonora)
+
 ## O que você precisa
 
 1. **Node.js 22 ou mais novo** — [https://nodejs.org](https://nodejs.org)  
@@ -13,33 +15,38 @@ Guia rápido em português: **COMO-RODAR.txt** (o mesmo conteúdo abaixo).
 
 ## Passo a passo
 
-1. Extraia o ZIP para uma pasta, por exemplo `C:\Sonora` ou `~/Sonora`.
-2. Abra o terminal **nessa pasta**.
-   - Windows: botão direito na pasta → *Abrir no Terminal*, ou `cd C:\Sonora`
-   - Mac/Linux: `cd ~/Sonora`
-3. Copie o arquivo da chave:
+1. Baixe o projeto:
+
+   ```
+   git clone https://github.com/PAULO4800/sonora.git
+   cd sonora
+   ```
+
+   Sem Git: extraia o ZIP para uma pasta, por exemplo `C:\Sonora` ou `~/Sonora`, e abra o terminal **nessa pasta**.
+
+2. Copie o arquivo da chave:
    - Windows (PowerShell): `copy .env.example .env`
    - Mac/Linux: `cp .env.example .env`
-4. Abra o `.env` e cole a chave:
+3. Abra o `.env` e cole a chave:
 
    ```
    XAI_API_KEY=xai-xxxxxxxx
    ```
 
    Sem aspas. Sem espaço em volta do `=`.
-5. Instale as dependências (só na primeira vez):
+4. Instale as dependências (só na primeira vez):
 
    ```
    npm install
    ```
 
-6. Inicie o app:
+5. Inicie o app:
 
    ```
    npm run dev
    ```
 
-7. No navegador, abra [http://localhost:8080](http://localhost:8080)
+6. No navegador, abra [http://localhost:8080](http://localhost:8080)
 
 Cole o texto, escolha a voz, clique em **Gerar voz**.
 

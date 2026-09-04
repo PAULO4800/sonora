@@ -8,4 +8,10 @@ artifacts
 *.log
 .grok/preview.log
 .grok/og-pending
+.grok/skills
+.grok/references
+.grok/status
+.project_id
+.tanstack
+.node_modules.lock
 .DS_Store

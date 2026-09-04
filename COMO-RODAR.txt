@@ -1,6 +1,8 @@
 SONORA — como rodar no seu PC
 ================================
 
+Repositório: https://github.com/PAULO4800/sonora
+
 O que você precisa
 ------------------
 1. Node.js 22 ou mais novo  →  https://nodejs.org
@@ -10,32 +12,29 @@ O que você precisa
 
 Passo a passo (Windows, Mac ou Linux)
 -------------------------------------
-1. Extraia este ZIP para uma pasta, por exemplo:
-     C:\Sonora
-     ou
-     ~/Sonora
+1. Baixe o projeto com Git:
+     git clone https://github.com/PAULO4800/sonora.git
+     cd sonora
 
-2. Abra o terminal NESSÁ pasta:
-     Windows: clique com o botão direito na pasta → "Abrir no Terminal"
-              ou PowerShell:  cd C:\Sonora
-     Mac/Linux:  cd ~/Sonora
+   Sem Git: extraia o ZIP para uma pasta, por exemplo C:\Sonora ou ~/Sonora,
+   e abra o terminal NESSA pasta.
 
-3. Copie o arquivo de exemplo da chave:
+2. Copie o arquivo de exemplo da chave:
      Windows (PowerShell):  copy .env.example .env
      Mac/Linux:             cp .env.example .env
 
-4. Abra o arquivo .env no Bloco de Notas e cole a sua chave:
+3. Abra o arquivo .env no Bloco de Notas e cole a sua chave:
      XAI_API_KEY=xai-xxxxxxxx
 
    Sem aspas. Sem espaço em volta do =.
 
-5. Instale as dependências (só na primeira vez, demora 1–2 minutos):
+4. Instale as dependências (só na primeira vez, demora 1–2 minutos):
      npm install
 
-6. Inicie o app:
+5. Inicie o app:
      npm run dev
 
-7. No navegador, abra:
+6. No navegador, abra:
      http://localhost:8080
 
 Pronto. Cole o texto, escolha a voz, clique em Gerar voz.
@@ -51,9 +50,7 @@ Se der erro
     na pasta do projeto (a mesma pasta do package.json).
 
 - Porta 8080 ocupada
-    Feche o outro programa que está usando 8080, ou rode:
-      npx vite dev --host 0.0.0.0 --port 5173
-    e abra http://localhost:5173
+    Feche o outro programa que está usando 8080.
 
 - Gerar voz falhou / 429
     A cota da sua chave xAI esgotou ou a internet caiu. Tente de novo.

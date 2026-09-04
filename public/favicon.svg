@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Sonora">
+  <rect width="32" height="32" rx="8" fill="#0c0c0d"/>
+  <path
+    fill="none"
+    stroke="#d4d0c8"
+    stroke-width="2.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="M5 17
+       C7.2 17 7.8 12.2 10 12.2
+       C12.2 12.2 12.6 21.2 15 21.2
+       C17.6 21.2 17.8 8.2 20.6 8.2
+       C23.4 8.2 23.6 23.4 26 23.4
+       C27.4 23.4 27.8 17 29 17"
+  />
+</svg>
